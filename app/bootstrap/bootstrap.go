@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"go-api/app/middlewares"
 	"go-api/app/router"
 	"time"
 
@@ -16,6 +17,7 @@ func RunServer() {
 }
 
 func registerGlobalMiddlewares(app *gin.Engine)  {
+	app.Use(middlewares.Recover())
 	app.Use(cors.New(cors.Config{
 		// 允许的源，*表示允许所有源
 		AllowOrigins:     []string{"*"},
