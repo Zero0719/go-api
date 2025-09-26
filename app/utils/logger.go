@@ -11,13 +11,15 @@ import (
 )
 
 var Logger zerolog.Logger
+var RequestLogger zerolog.Logger // 专门的请求日志记录器
 
 // 定义级别写入器，实现zerolog.LevelWriter接口
 type LevelLogger struct {
-	debug *DynamicLogWriter
-	info  *DynamicLogWriter
-	warn  *DynamicLogWriter
-	err   *DynamicLogWriter
+	debug   *DynamicLogWriter
+	info    *DynamicLogWriter
+	warn    *DynamicLogWriter
+	err     *DynamicLogWriter
+	request *DynamicLogWriter // 专门的请求日志写入器
 }
 
 // 动态日志写入器，支持按日期切换文件
@@ -61,15 +63,16 @@ func (d *DynamicLogWriter) checkAndSwitchFile() {
 
 // createNewWriter 创建新的日志写入器
 func (d *DynamicLogWriter) createNewWriter() {
-	// 目录格式: runtime/logs/年/月
+	// 目录格式: runtime/logs/年/月/级别
 	yearDir := filepath.Join(d.baseDir, time.Now().Format("2006"))
 	monthDir := filepath.Join(yearDir, time.Now().Format("01"))
-	if err := os.MkdirAll(monthDir, 0755); err != nil {
+	levelDir := filepath.Join(monthDir, d.level)
+	if err := os.MkdirAll(levelDir, 0755); err != nil {
 		panic(fmt.Sprintf("创建日志目录失败: %v", err))
 	}
 
-	// 文件名格式: 日期-级别.log
-	logFile := filepath.Join(monthDir, fmt.Sprintf("%s-%s.log", d.lastDate, d.level))
+	// 文件名格式: 日期.log
+	logFile := filepath.Join(levelDir, fmt.Sprintf("%s.log", d.lastDate))
 
 	d.writer = &lumberjack.Logger{
 		Filename:   logFile,
@@ -97,10 +100,11 @@ func InitLogger() zerolog.Logger {
 
 	// 初始化各级别动态日志写入器
 	levelLogger := &LevelLogger{
-		debug: newDynamicLogWriter("debug", rootDir),
-		info:  newDynamicLogWriter("info", rootDir),
-		warn:  newDynamicLogWriter("warn", rootDir),
-		err:   newDynamicLogWriter("error", rootDir),
+		debug:   newDynamicLogWriter("debug", rootDir),
+		info:    newDynamicLogWriter("info", rootDir),
+		warn:    newDynamicLogWriter("warn", rootDir),
+		err:     newDynamicLogWriter("error", rootDir),
+		request: newDynamicLogWriter("request", rootDir), // 添加请求日志写入器
 	}
 
 	// 组合控制台和文件输出
@@ -110,6 +114,12 @@ func InitLogger() zerolog.Logger {
 	)
 
 	Logger = zerolog.New(multiWriter).With().Timestamp().Logger()
+
+	// 创建专门的请求日志记录器（只写入文件，不输出到控制台）
+	requestWriter := zerolog.MultiLevelWriter(
+		levelLogger.request, // 只写入请求日志文件
+	)
+	RequestLogger = zerolog.New(requestWriter).With().Timestamp().Logger()
 
 	return Logger
 }

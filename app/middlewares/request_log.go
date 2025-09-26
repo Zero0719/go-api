@@ -97,8 +97,8 @@ func RequestLog() gin.HandlerFunc {
 			responseType = "JSON/TEXT"
 		}
 
-		// 记录日志
-		utils.Logger.Info().
+		// 记录日志到专门的请求日志文件
+		utils.RequestLogger.Info().
 			Str("ip", ip).
 			Str("method", method).
 			Str("path", path).
