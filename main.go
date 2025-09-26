@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "go-api/app/bootstrap"
 
 func main() {
-	fmt.Println("Hello, go api")
+	bootstrap.RunServer()
 }
