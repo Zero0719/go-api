@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(app *gin.Engine)  {
-	app.GET("/", (&controllers.IndexController{}).Index)
+func RegisterRoutes(app *gin.Engine) {
+	controller := &controllers.IndexController{}
+
+	app.GET("/", controller.Index)
 }

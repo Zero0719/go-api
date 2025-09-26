@@ -7,9 +7,12 @@ import (
 )
 
 type IndexController struct {
-	
 }
 
 func (c *IndexController) Index(ctx *gin.Context) {
-	utils.ResponseSuccess(ctx, []interface{}{}, "success")
+	utils.Logger.Info().Msg("IndexController Index")
+	utils.ResponseSuccess(ctx, gin.H{
+		"message":   "Hello World",
+		"timestamp": "2025-09-26",
+	}, "success")
 }
