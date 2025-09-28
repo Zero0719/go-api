@@ -18,6 +18,7 @@ func RegisterRoutes(app *gin.Engine) {
 	notAuthorized := app.Group("/")
 
 	app.GET("/", indexController.Index)
+	app.POST("/user", userController.Create)
 
 	// 不需要登陆
 	notAuthorized.POST("/login", sessionController.Login)

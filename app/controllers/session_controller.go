@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"go-api/app/models"
 	"go-api/app/utils"
 	"net/http"
 
@@ -23,7 +24,24 @@ func (c *SessionController) Login(ctx *gin.Context) {
 	}
 
 	// todo 获取数据库数据进行校验等
-	token, refreshToken, err := utils.GenerateToken(13800);
+
+	var user models.User
+	user, err := user.GetByUsername(loginRequest.Username)
+	if err != nil {
+		utils.ResponseError(ctx, gin.H{}, "Login failed", http.StatusInternalServerError)
+		return
+	}
+	if (user.ID == 0) {
+		utils.ResponseError(ctx, gin.H{}, "用户名或密码错误", http.StatusUnauthorized)
+		return
+	}
+
+	if user.Password != utils.MD5(loginRequest.Password + utils.Config.GetString("app.salt")) {
+		utils.ResponseError(ctx, gin.H{}, "用户名或密码错误", http.StatusUnauthorized)
+		return
+	}
+
+	token, refreshToken, err := utils.GenerateToken(int(user.ID));
 	if err != nil {
 		utils.ResponseError(ctx, gin.H{}, "Login failed", http.StatusInternalServerError)
 		return

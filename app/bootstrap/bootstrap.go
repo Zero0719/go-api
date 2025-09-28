@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"go-api/app/middlewares"
+	"go-api/app/models"
 	"go-api/app/router"
 	"go-api/app/utils"
 	"net/http"
@@ -15,12 +16,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RunServer() {
+func Start() {
 	// 初始化日志
 	utils.InitLogger()
 
 	// 初始化配置
 	utils.InitConfig()
+
+	// 初始化数据库
+	models.InitDB()
 
 	app := gin.New()
 	registerGlobalMiddlewares(app)
