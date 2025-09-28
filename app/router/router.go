@@ -21,6 +21,7 @@ func RegisterRoutes(app *gin.Engine) {
 
 	// 不需要登陆
 	notAuthorized.POST("/login", sessionController.Login)
+	notAuthorized.POST("/refreshToken", sessionController.RefreshToken)
 
 	// 需要登陆
 	authorized.GET("/me", userController.Me)

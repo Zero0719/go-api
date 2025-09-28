@@ -23,12 +23,31 @@ func (c *SessionController) Login(ctx *gin.Context) {
 	}
 
 	// todo 获取数据库数据进行校验等
-	token, err := utils.GenerateToken(13800);
+	token, refreshToken, err := utils.GenerateToken(13800);
 	if err != nil {
 		utils.ResponseError(ctx, gin.H{}, "Login failed", http.StatusInternalServerError)
 		return
 	}
 	utils.ResponseSuccess(ctx, gin.H{
-		"token": token,
+		"token":        token,
+		"refreshToken": refreshToken,
+	}, "success")
+}
+
+func (c *SessionController) RefreshToken(ctx *gin.Context) {
+	refreshToken := ctx.GetHeader("Refresh-Token")
+	if refreshToken == "" {
+		utils.ResponseError(ctx, gin.H{}, "Refresh token is required", http.StatusBadRequest)
+		return
+	}
+	token, newRefreshToken, err := utils.RefreshToken(refreshToken)
+	if err != nil {
+		utils.ResponseError(ctx, gin.H{}, "Refresh token is invalid", http.StatusUnauthorized)
+		return
+	}
+
+	utils.ResponseSuccess(ctx, gin.H{
+		"token":        token,
+		"refreshToken": newRefreshToken,
 	}, "success")
 }

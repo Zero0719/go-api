@@ -4,4 +4,6 @@ app:
 
 auth:
   jwt_secret: "secret"
-  jwt_exp: 1440
+  jwt_exp: 15
+  jwt_refresh_secret: "refresh_secret"
+  jwt_refresh_exp: 10080
