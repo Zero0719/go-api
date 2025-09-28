@@ -1,9 +1,14 @@
 package bootstrap
 
 import (
+	"context"
 	"go-api/app/middlewares"
 	"go-api/app/router"
 	"go-api/app/utils"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -21,7 +26,33 @@ func RunServer() {
 	registerGlobalMiddlewares(app)
 	router.RegisterRoutes(app)
 	utils.Logger.Info().Msg("Starting server...")
-	app.Run(":" + utils.Config.GetString("app.port"))
+
+
+	srv := &http.Server{
+		Addr:    ":" + utils.Config.GetString("app.port"),
+		Handler: app.Handler(),
+	}
+
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			utils.Logger.Error().Msgf("Server error: %v", err)
+		}
+	}()
+
+	utils.Logger.Info().Msg("Server started")
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	utils.Logger.Info().Msg("Server shutting down")
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		utils.Logger.Error().Msgf("Server shutdown error: %v", err)
+	}
+	utils.Logger.Info().Msg("Server shutdown")
 }
 
 func registerGlobalMiddlewares(app *gin.Engine) {
