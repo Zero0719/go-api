@@ -1,0 +1,7 @@
+app:
+  port: 8080
+  env: development
+
+auth:
+  jwt_secret: "secret"
+  jwt_exp: 1440

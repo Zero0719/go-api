@@ -9,14 +9,14 @@ import (
 func GenerateToken(userId int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"exp":    time.Now().Add(time.Hour * 24).Unix(),
+		"exp":    time.Now().Add(time.Duration(Config.GetInt("auth.jwt_exp")) * time.Minute).Unix(),
 	})
-	return token.SignedString([]byte("secret"))
+	return token.SignedString([]byte(Config.GetString("auth.jwt_secret")))
 }
 
 func ParseToken(tokenString string) (int, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return []byte("secret"), nil
+		return []byte(Config.GetString("auth.jwt_secret")), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 	if err != nil {
 		return 0, err

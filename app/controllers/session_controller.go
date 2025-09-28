@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"go-api/app/utils"
 	"net/http"
 

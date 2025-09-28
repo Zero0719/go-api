@@ -14,11 +14,14 @@ func RunServer() {
 	// 初始化日志
 	utils.InitLogger()
 
+	// 初始化配置
+	utils.InitConfig()
+
 	app := gin.New()
 	registerGlobalMiddlewares(app)
 	router.RegisterRoutes(app)
 	utils.Logger.Info().Msg("Starting server...")
-	app.Run()
+	app.Run(":" + utils.Config.GetString("app.port"))
 }
 
 func registerGlobalMiddlewares(app *gin.Engine) {
