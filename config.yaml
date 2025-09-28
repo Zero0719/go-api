@@ -16,3 +16,11 @@ db:
   user: homestead
   password: secret
   database: go_api
+
+cache:
+  type: "redis"
+  host: 192.168.56.56
+  port: 6379
+  password: 
+  database: 0
+  pool_size: 10

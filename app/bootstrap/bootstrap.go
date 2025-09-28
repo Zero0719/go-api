@@ -26,6 +26,9 @@ func Start() {
 	// 初始化数据库
 	models.InitDB()
 
+	// 初始化redis
+	utils.InitRedis()
+
 	app := gin.New()
 	registerGlobalMiddlewares(app)
 	router.RegisterRoutes(app)
