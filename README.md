@@ -30,14 +30,14 @@
 ### 统一响应
 
 ```
-utils.ResponseSuccess
-utils.ResponseError
+response.Success
+response.Error
 ```
 
 ### 使用日志
 
 ```
-utils.Logger.Info().Msg("this is log msg")
+logger.CommonLogger.Info().Msg("this is log msg")
 ```
 
 ### 使用数据库
@@ -45,11 +45,7 @@ utils.Logger.Info().Msg("this is log msg")
 详细用法请查看 `gorm`
 
 ```
-var user User
-if err := DB.Where("username = ?", username).Limit(1).Find(&user).Error; err != nil {
-    return User{}, err
-}
-return user, nil
+db.DB
 ```
 
 ### 使用 reids
@@ -57,6 +53,6 @@ return user, nil
 详细请查看相关的包文档
 
 ```
-utils.Redis.Set(ctx.Background(), "test-key", "test-value", 0)
+redis.Redis
 ```
 
