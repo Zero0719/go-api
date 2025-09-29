@@ -4,23 +4,21 @@ app:
   salt: "salt"
 
 auth:
-  jwt_secret: "secret"
-  jwt_exp: 15
-  jwt_refresh_secret: "refresh_secret"
-  jwt_refresh_exp: 10080
+  jwtSecret: "secret"
+  jwtExp: 15
+  jwtRefreshSecret: "refresh_secret"
+  jwtRefreshExp: 10080
 
 db:
-  type: "mysql"
   host: 192.168.56.56
   port: 3306
   user: homestead
   password: secret
   database: go_api
 
-cache:
-  type: "redis"
+redis:
   host: 192.168.56.56
   port: 6379
   password: 
   database: 0
-  pool_size: 10
+  poolSize: 10
