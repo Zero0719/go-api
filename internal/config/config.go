@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -58,8 +57,6 @@ func Init() {
 	if err != nil {
 		log.Fatalf("解析配置文件失败: %v", err)
 	}
-
-	fmt.Println(globalConfig)
 }
 
 func Get() *Config {

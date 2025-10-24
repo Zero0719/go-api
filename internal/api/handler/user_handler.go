@@ -7,24 +7,30 @@ import (
 	"go-api/internal/service"
 	"go-api/pkg/jwt"
 	"go-api/pkg/response"
+	"go-api/pkg/validator"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type LoginRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" label:"用户名" validate:"required"`
+	Password string `json:"password" label:"密码" validate:"required"`
 }
 
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" label:"用户名" validate:"required,min=3,max=20"`
+	Password string `json:"password" label:"密码" validate:"required,min=6,max=20"`
 }
 
 func LoginHandler(ctx *gin.Context) {
 	var request LoginRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
+		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := validator.ValidateStructFirstError(request); err != nil {
 		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -52,6 +58,11 @@ func RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
+	if err := validator.ValidateStructFirstError(request); err != nil {
+		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	userService := service.NewUserService(repository.NewUserRepository(db.DB))
 	user, err := userService.Register(ctx, request.Username, request.Password)
 	if err != nil {
@@ -69,8 +80,8 @@ func RegisterHandler(ctx *gin.Context) {
 }
 
 type MeResponse struct {
-	ID uint `json:"id"`
-	Username string `json:"username"`
+	ID        uint   `json:"id"`
+	Username  string `json:"username"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
@@ -83,13 +94,12 @@ func MeHandler(ctx *gin.Context) {
 		return
 	}
 	response.Success(ctx, MeResponse{
-		ID: user.ID,
-		Username: user.Username,
+		ID:        user.ID,
+		Username:  user.Username,
 		CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: user.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}, "success")
 }
-
 
 func RefreshTokenHandler(ctx *gin.Context) {
 	refreshToken := ctx.GetHeader("Refresh-Token")

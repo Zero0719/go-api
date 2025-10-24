@@ -20,13 +20,11 @@ func Run() {
 	initLogger()
 	initDB()
 	initRedis()
-
 	startServer()
 }
 
 func startServer() {
 	app := gin.New()
-
 	// 注册中间件	
 	appConfig := config.Get().App
 	server := &http.Server{
