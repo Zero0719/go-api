@@ -4,37 +4,21 @@ import (
 	"fmt"
 	"go-api/internal/db"
 	"go-api/internal/repository"
+	"go-api/internal/request"
 	"go-api/internal/service"
 	"go-api/pkg/jwt"
 	"go-api/pkg/response"
-	"go-api/pkg/validator"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type LoginRequest struct {
-	Username string `json:"username" label:"用户名" validate:"required"`
-	Password string `json:"password" label:"密码" validate:"required"`
-}
 
-type RegisterRequest struct {
-	Username string `json:"username" label:"用户名" validate:"required,min=3,max=20"`
-	Password string `json:"password" label:"密码" validate:"required,min=6,max=20"`
-}
 
 func LoginHandler(ctx *gin.Context) {
-	var request LoginRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
-		return
+	request, err := BindAndValidate[request.LoginRequest](ctx)
+	if err != nil {
+		
 	}
-
-	if err := validator.ValidateStructFirstError(request); err != nil {
-		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	userService := service.NewUserService(repository.NewUserRepository(db.DB))
 	user, err := userService.Login(ctx, request.Username, request.Password)
 	if err != nil {
@@ -52,14 +36,9 @@ func LoginHandler(ctx *gin.Context) {
 }
 
 func RegisterHandler(ctx *gin.Context) {
-	var request RegisterRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
-		return
-	}
+	request, err := BindAndValidate[request.RegisterRequest](ctx)
 
-	if err := validator.ValidateStructFirstError(request); err != nil {
-		response.Error(ctx, gin.H{}, err.Error(), http.StatusBadRequest)
+	if err != nil {
 		return
 	}
 
