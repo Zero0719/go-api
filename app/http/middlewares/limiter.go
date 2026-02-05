@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Zero0719/go-api/pkg/app"
@@ -54,7 +55,7 @@ func limitHandler(c *gin.Context, key string, limit string) bool {
 
 	if err != nil {
 		logger.LogIf(err)
-		response.Abort500(c)
+		response.Error(c, errors.New("系统错误"), http.StatusInternalServerError)
 		return false
 	}
 

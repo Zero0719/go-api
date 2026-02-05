@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	"errors"
 	"net"
+	"net/http"
 	"net/http/httputil"
 	"os"
 	"strings"
@@ -48,7 +50,7 @@ func Recovery() gin.HandlerFunc {
 					zap.Stack("stacktrace"),
 				)
 				
-				response.Abort500(c)
+				response.Error(c, errors.New("系统错误"), http.StatusInternalServerError)
 			}
 		}()
 		c.Next()
