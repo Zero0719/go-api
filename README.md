@@ -4,7 +4,7 @@
 
 ```bash
 # 克隆模板仓库到你的项目目录
-git clone https://github.com/your-username/go-api-template.git my-new-project
+git clone https://github.com/Zero0719/go-api.git my-new-project
 cd my-new-project
 
 # 删除原有的 Git 历史记录，准备初始化新的仓库
