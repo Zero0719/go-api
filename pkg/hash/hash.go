@@ -6,7 +6,7 @@ import (
 )
 
 func BcryptHash(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	logger.LogIf(err)
 	return string(bytes)
 }
