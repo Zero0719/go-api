@@ -10,6 +10,7 @@ import (
 // JSON 响应 200 和 JSON 数据
 func JSON(c *gin.Context, data interface{}) {
     c.JSON(http.StatusOK, data)
+    c.Abort()
 }
 
 // Success 响应 200 和预设『操作成功！』的 JSON 数据
