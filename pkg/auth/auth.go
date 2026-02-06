@@ -2,7 +2,7 @@ package auth
 
 import (
 	"errors"
-	"os/user"
+	"github.com/Zero0719/go-api/app/models/user"
 
 	"github.com/Zero0719/go-api/pkg/logger"
 	"github.com/gin-gonic/gin"
